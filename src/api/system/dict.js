@@ -7,6 +7,13 @@ export function getDicts() {
   })
 }
 
+export function getDictByName(data) {
+  return request({
+    url: 'api/dict?name=' + data,
+    method: 'get'
+  })
+}
+
 export function add(data) {
   return request({
     url: 'api/dict',
