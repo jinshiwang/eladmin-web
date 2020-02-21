@@ -53,7 +53,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="院系" prop="departmentId">
-          <el-select v-model="form.departmentId" placeholder="请选择" @change="changeColleage(form.schoolId)">
+          <el-select v-model="form.departmentId" placeholder="请选择">
             <el-option
               v-for="item in department"
               :key="item.value"
@@ -64,16 +64,26 @@
         </el-form-item>
 
         <el-form-item label="考研年份" prop="postgraduateYear">
-          <el-input v-model="form.postgraduateYear" :rows="3" type="textarea" autosize style="width: 670px" placeholder="" />
+          <el-input v-model="form.postgraduateYear" style="width: 670px" placeholder="yyyy" />
         </el-form-item>
         <el-form-item label="性别" prop="gender">
-          <el-input v-model="form.gender" :rows="3" type="textarea" autosize style="width: 670px" placeholder="" />
+          <el-radio v-for="item in genderOptions" :key="item.id" v-model="form.gender" :label="item.value">{{ item.label }}</el-radio>
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-input v-model="form.status" :rows="3" type="textarea" autosize style="width: 670px" placeholder="" />
+          <el-select v-model="form.status" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="产品" prop="product">
+          <el-input v-model="form.product" :rows="3" type="input" autosize style="width: 670px" placeholder="" />
         </el-form-item>
         <el-form-item label="缴费总额" prop="amount">
-          <el-input v-model="form.amount" :rows="3" type="textarea" autosize style="width: 670px" placeholder="" />
+          <el-input v-model="form.amount" :rows="3" type="input" autosize style="width: 670px" placeholder="" />
         </el-form-item>
         <el-form-item label="电话" prop="phone">
           <el-input v-model="form.phone" style="width: 670px" placeholder="电话" />
@@ -82,19 +92,16 @@
           <el-input v-model="form.qq" style="width: 670px" placeholder="qq" />
         </el-form-item>
         <el-form-item label="身份证" prop="identityCard">
-          <el-input v-model="form.identityCard" style="width: 670px" placeholder="qq" />
+          <el-input v-model="form.identityCard" style="width: 670px" placeholder="身份证" />
         </el-form-item>
         <el-form-item label="楼宇" prop="apartmentInfo">
-          <el-input v-model="form.apartmentInfo" :rows="3" type="textarea" autosize style="width: 670px" placeholder="" />
+          <el-input v-model="form.apartmentInfo" :rows="3" type="input" autosize style="width: 670px" placeholder="" />
         </el-form-item>
         <el-form-item label="宿舍" prop="room">
-          <el-input v-model="form.room" :rows="3" type="textarea" autosize style="width: 670px" placeholder="" />
+          <el-input v-model="form.room" :rows="3" type="input" autosize style="width: 670px" placeholder="" />
         </el-form-item>
-        <el-form-item label="交费备注" prop="startScript">
-          <el-input v-model="form.startScript" :rows="3" type="textarea" autosize style="width: 670px" placeholder="" />
-        </el-form-item>
-        <el-form-item label="操作" prop="startScript">
-          <el-input v-model="form.startScript" :rows="3" type="textarea" autosize style="width: 670px" placeholder="" />
+        <el-form-item label="交费备注" prop="remark">
+          <el-input v-model="form.remark" :rows="3" type="textarea" autosize style="width: 670px" placeholder="" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -110,7 +117,7 @@
       <el-table-column v-if="columns.visible('name')" prop="name" label="学员名称" />
       <el-table-column v-if="columns.visible('phone')" prop="phone" label="电话" />
       <el-table-column v-if="columns.visible('departmentName')" prop="departmentName" label="院系" />
-      <el-table-column v-if="columns.visible('status')" prop="status" label="状态" />
+      <el-table-column v-if="columns.visible('statusDesc')" prop="statusDesc" label="状态" />
       <el-table-column v-if="columns.visible('product')" prop="product" label="产品" />
       <el-table-column v-if="columns.visible('amount')" prop="amount" label="缴费总额" />
       <el-table-column v-if="columns.visible('postgraduateYear')" prop="postgraduateYear" label="考研年份" />
@@ -131,7 +138,7 @@
 </template>
 
 <script>
-import crudApp from '@/api/mnt/app'
+import crudApp from '@/api/haixue/student'
 import { dict } from '@/api/mnt/deploy'
 import CRUD, { presenter, header, form, crud } from '@crud/crud'
 import rrOperation from '@crud/RR.operation'
@@ -141,8 +148,9 @@ import pagination from '@crud/Pagination'
 import { getDictByName } from '@/api/system/dict'
 
 // crud交由presenter持有
-const defaultCrud = CRUD({ title: '应用', url: 'api/students', crudMethod: { ...crudApp }})
-const defaultForm = { id: 0, name: null }
+const defaultCrud = CRUD({ title: '学员', url: 'api/students', crudMethod: { ...crudApp }})
+const defaultForm = { id: 0, studentNum: null, name: null, schoolId: null, departmentId: null, postgraduateYear: null, product: null, amount: 0.00,
+  postgraduateYear: null, gender: 1, status: 0, phone: null, qq: null, identityCard: null, apartmentInfo: null, room: null, remark: null }
 export default {
   name: 'App',
   // 数据字典
@@ -164,15 +172,44 @@ export default {
           { required: true, message: '请输入学员名称', trigger: 'blur' }
         ],
         schoolId: [
-          { required: true, message: '请选择学校', trigger: 'blur', type: 'number' }
+          { required: true, message: '请选择学校', trigger: 'blur' }
         ],
         phone: [
           { required: true, message: '请输入手机号', trigger: 'blur' }
         ],
         postgraduateYear: [
           { required: true, message: '请选择年份', trigger: 'blur' }
+        ],
+        status: [
+          { required: true, message: '请选择状态', trigger: 'blur' }
         ]
-      }
+      },
+      options: [{
+        value: 0,
+        label: '非学员'
+      }, {
+        value: 1,
+        label: '意向'
+      }, {
+        value: 2,
+        label: '预报名'
+      }, {
+        value: 3,
+        label: '订金'
+      }, {
+        value: 4,
+        label: '全款'
+      }],
+      genderOptions: [
+        {
+          value: 1,
+          label: '男'
+        },
+        {
+          value: 2,
+          label: '女'
+        }
+      ]
     }
   },
   methods: {
@@ -192,6 +229,10 @@ export default {
         this.department = res.content[0].dictDetails
       })
     }
+    // 提交前做的操作
+    // [CRUD.HOOK.afterValidateCU](crud) {
+    //   return true
+  //  }
   }
 }
 </script>

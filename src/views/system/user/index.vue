@@ -336,12 +336,6 @@ export default {
           type: 'warning'
         })
         return false
-      } else if (!crud.form.job.id) {
-        this.$message({
-          message: '岗位不能为空',
-          type: 'warning'
-        })
-        return false
       } else if (this.roles.length === 0) {
         this.$message({
           message: '角色不能为空',

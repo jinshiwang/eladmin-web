@@ -23,4 +23,12 @@ export function edit(data) {
     data
   })
 }
-export default { add, edit, del }
+export function getStudents(params) {
+  return request({
+    url: 'api/students',
+    method: 'get',
+    params
+  })
+}
+
+export default { add, edit, del, getStudents }
