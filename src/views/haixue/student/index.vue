@@ -4,9 +4,9 @@
     <div class="head-container">
       <div v-if="crud.props.searchToggle">
         <!-- 搜索 -->
-        <el-input v-model="query.name" clearable placeholder="输入名称搜索" style="width: 200px" class="filter-item" @keyup.enter.native="crud.toQuery" />
+          <el-input v-model="query.name" clearable placeholder="输入姓名搜索" style="width: 200px" class="filter-item"/>
         <el-date-picker
-          v-model="query.createTime"
+          v-model="query.gmtTime"
           :default-time="['00:00:00','23:59:59']"
           type="daterange"
           range-separator=":"
@@ -16,6 +16,31 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
         />
+        <el-input v-model="query.phone" clearable placeholder="手机" style="width: 200px" class="filter-item"/>
+        <el-select v-model="query.status" placeholder="学员状态" class="filter-item" style="width: 200px" clearable>
+                    <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+         </el-select>
+         <el-select v-model="query.schoolId" placeholder="学校" @change="changeColleage(query.schoolId,'query')" class="filter-item" clearable>
+                     <el-option
+                       v-for="item in dict.colleages"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value"
+                     />
+         </el-select>
+         <el-select v-model="query.departmentId" placeholder="院系" class="filter-item" clearable>
+                     <el-option
+                       v-for="item in queryDepartment"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value"
+                     />
+         </el-select>
         <rrOperation :crud="crud" />
       </div>
       <!--
@@ -43,7 +68,7 @@
           <el-input v-model="form.name" style="width: 670px" placeholder="学员名称" />
         </el-form-item>
         <el-form-item label="学校" prop="schoolId">
-          <el-select v-model="form.schoolId" placeholder="请选择" @change="changeColleage(form.schoolId)">
+          <el-select v-model="form.schoolId" placeholder="请选择" @change="changeColleage(form.schoolId,'edit')">
             <el-option
               v-for="item in dict.colleages"
               :key="item.value"
@@ -146,6 +171,7 @@ import crudOperation from '@crud/CRUD.operation'
 import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
 import { getDictByName } from '@/api/system/dict'
+import { isvalidPhone } from '@/utils/validate'
 
 // crud交由presenter持有
 const defaultCrud = CRUD({ title: '学员', url: 'api/students', crudMethod: { ...crudApp }})
@@ -158,15 +184,26 @@ export default {
   components: { pagination, crudOperation, rrOperation, udOperation },
   mixins: [presenter(defaultCrud), header(), form(defaultForm), crud()],
   data() {
+    const validPhone = (rule, value, callback) => {
+              if (!value) {
+                callback(new Error('请输入电话号码'))
+              } else if (!isvalidPhone(value)) {
+                callback(new Error('请输入正确的11位手机号码'))
+              } else {
+                callback()
+              }
+            }
     return {
       currentRow: null,
       permission: {
         add: ['admin', 'app:add'],
         edit: ['admin', 'app:edit'],
-        del: ['admin', 'app:del']
+        del: ['admin', 'app:del'],
+        del: ['super-admin', 'app:del'],
       },
       colleages: [],
       department: [],
+      queryDepartment:[],
       rules: {
         name: [
           { required: true, message: '请输入学员名称', trigger: 'blur' }
@@ -175,7 +212,7 @@ export default {
           { required: true, message: '请选择学校', trigger: 'blur' }
         ],
         phone: [
-          { required: true, message: '请输入手机号', trigger: 'blur' }
+          { required: true, message: '请输入手机号', validator: validPhone }
         ],
         postgraduateYear: [
           { required: true, message: '请选择年份', trigger: 'blur' }
@@ -224,15 +261,25 @@ export default {
     handleCurrentChange(row) {
       this.currentRow = JSON.parse(JSON.stringify(row))
     },
-    changeColleage(data) {
+    [CRUD.HOOK.afterToCU](crud, form) {
+        // console.info(form.schoolId);
+        var schoolId = form.schoolId;
+        this.changeColleage(schoolId,'edit');
+     },
+    changeColleage(data,type) {
       getDictByName(data).then(res => {
-        this.department = res.content[0].dictDetails
+        if('edit'==type){
+          this.department = res.content[0].dictDetails
+        }else{
+          this.queryDepartment = res.content[0].dictDetails
+        }
+
       })
-    }
+    },
     // 提交前做的操作
-    // [CRUD.HOOK.afterValidateCU](crud) {
-    //   return true
-  //  }
+     [CRUD.HOOK.afterValidateCU](crud) {
+      return true
+     }
   }
 }
 </script>
