@@ -31,4 +31,11 @@ export function getStudents(params) {
   })
 }
 
-export default { add, edit, del, getStudents }
+export function chart() {
+  return request({
+    url: 'api/students/chart',
+    method: 'get'
+  })
+}
+
+export default { add, edit, del, getStudents, chart }

@@ -74,6 +74,9 @@
             <el-form-item label="用户名" prop="username">
               <el-input v-model="form.username" />
             </el-form-item>
+            <el-form-item label="密码" prop="password">
+              <el-input v-model="form.password" placeholder="默认密码123456不需要设置" />
+            </el-form-item>
             <el-form-item label="电话" prop="phone">
               <el-input v-model.number="form.phone" />
             </el-form-item>
