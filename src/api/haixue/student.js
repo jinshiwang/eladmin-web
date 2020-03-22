@@ -38,4 +38,11 @@ export function chart() {
   })
 }
 
-export default { add, edit, del, getStudents, chart }
+export function charttable() {
+  return request({
+    url: 'api/students/charttable',
+    method: 'get'
+  })
+}
+
+export default { add, edit, del, getStudents, chart, charttable }

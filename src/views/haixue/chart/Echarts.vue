@@ -15,17 +15,42 @@
             style="width: 100%"
           >
             <el-table-column
-              prop="pyear"
+              prop="year"
               label="考研年份"
               width="180"
             />
             <el-table-column
-              prop="total"
-              label="学生数量（个）"
+              prop="schoolName"
+              label="学校"
               width="180"
             />
             <el-table-column
-              prop="amount"
+              prop="initNums"
+              label="非学员数量（个）"
+              width="180"
+            />
+            <el-table-column
+              prop="intentionNums"
+              label="意向学员数量（个）"
+              width="180"
+            />
+            <el-table-column
+              prop="presignupNums"
+              label="预报名学员数量（个）"
+              width="180"
+            />
+            <el-table-column
+              prop="subscriptionNums"
+              label="定金学员数量（个）"
+              width="180"
+            />
+            <el-table-column
+              prop="fullpaymentNums"
+              label="全款学员数量（个）"
+              width="180"
+            />
+            <el-table-column
+              prop="totalAmount"
               label="总输入金额（元）"
             />
           </el-table>
@@ -38,7 +63,7 @@
 <script>
 
 import Category from '@/components/Echarts/StudentChart'
-import studnetchart from '@/api/haixue/student'
+import studentchart from '@/api/haixue/student'
 
 export default {
   name: 'Echarts',
@@ -51,8 +76,8 @@ export default {
     }
   },
   mounted() {
-    studnetchart.chart().then(res => {
-      this.tableData = res.groups
+    studentchart.charttable().then(res => {
+      this.tableData = res
     })
   }
 }
