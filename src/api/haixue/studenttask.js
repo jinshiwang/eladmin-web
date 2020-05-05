@@ -23,24 +23,23 @@ export function edit(data) {
     data
   })
 }
-export function getStudents(params) {
+export function getStudentsTask(params) {
   return request({
-    url: 'api/students',
-    method: 'get',
-    params
-  })
-}
-
-export function chart() {
-  return request({
-    url: 'api/students/chart',
+    url: 'api/studentexpense/financeTaskList',
     method: 'get'
   })
 }
 
-export function charttable() {
+export function pass(params) {
   return request({
-    url: 'api/students/charttable',
+    url: 'api/studentexpense/apply?model=finance&taskId=' + params,
+    method: 'get'
+  })
+}
+
+export function reject(params) {
+  return request({
+    url: 'api/studentexpense/reject?taskId=' + params,
     method: 'get'
   })
 }
@@ -52,4 +51,4 @@ export function startProcess(params) {
   })
 }
 
-export default { add, edit, del, getStudents, chart, charttable, startProcess }
+export default { add, edit, del, getStudentsTask, pass, reject, startProcess }

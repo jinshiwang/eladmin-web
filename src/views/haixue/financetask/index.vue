@@ -155,32 +155,37 @@
       <el-table-column v-if="columns.visible('postgraduateYear')" prop="postgraduateYear" label="考研年份" />
       <el-table-column v-if="columns.visible('apartmentInfo')" prop="apartmentInfo" label="宿舍" />
       <el-table-column v-if="columns.visible('remark')" prop="remark" label="交费备注" />
-      <el-table-column v-permission="['admin','app:edit','app:del']" label="操作" width="150px" align="center">
-        <template slot-scope="scope">
-          <udOperation
-            v-if="scope.row.processFlag==false"
-            :data="scope.row"
-            :permission="permission"
-          />
-        </template>
-
-      </el-table-column>
-      <el-table-column label="上传审核">
+      <el-table-column label="驳回" width="150px" align="center">
         <template slot-scope="scope">
           <el-popover
             :ref="scope.row.id"
             placement="top"
             width="180"
           >
-            <p>确定上传审核本条数据吗？</p>
+            <p>确定驳回本条数据吗？</p>
             <div style="text-align: right; margin: 0">
               <el-button size="mini" type="text" @click="$refs[scope.row.id].doClose()">取消</el-button>
-              <el-button :loading="delLoading" type="primary" size="mini" @click="startProcess(scope.row)">确定</el-button>
+              <el-button type="primary" size="mini" @click="reject(scope.row)">确定</el-button>
             </div>
-            <svg-icon slot="reference" icon-class="deploy" />
+            <i slot="reference" class="el-icon-close" label="驳回" />
           </el-popover>
         </template>
-
+      </el-table-column>
+      <el-table-column label="通过" width="150px" align="center">
+        <template slot-scope="scope">
+          <el-popover
+            :ref="scope.row.taskId"
+            placement="top"
+            width="180"
+          >
+            <p>确定通过本条数据吗？</p>
+            <div style="text-align: right; margin: 0">
+              <el-button size="mini" type="text" @click="$refs[scope.row.taskId].doClose()">取消</el-button>
+              <el-button type="primary" size="mini" @click="pass(scope.row)">确定</el-button>
+            </div>
+            <i slot="reference" class="el-icon-check" label="通过" />
+          </el-popover>
+        </template>
       </el-table-column>
     </el-table>
     <!--分页组件-->
@@ -189,7 +194,7 @@
 </template>
 
 <script>
-import crudApp from '@/api/haixue/student'
+import crudApp from '@/api/haixue/studenttask'
 import { dict } from '@/api/mnt/deploy'
 import CRUD, { presenter, header, form, crud } from '@crud/crud'
 import rrOperation from '@crud/RR.operation'
@@ -200,7 +205,7 @@ import { getDictByName } from '@/api/system/dict'
 import { isvalidPhone } from '@/utils/validate'
 
 // crud交由presenter持有
-const defaultCrud = CRUD({ title: '学员', url: 'api/students', crudMethod: { ...crudApp }})
+const defaultCrud = CRUD({ title: '学员', url: '/api/studentexpense/financeTaskList', crudMethod: { ...crudApp }})
 const defaultForm = { id: 0, studentNum: null, name: null, schoolId: null, departmentId: null, postgraduateYear: null, product: null, amount: 0.00,
   postgraduateYear: null, gender: 1, status: 0, phone: null, qq: null, identityCard: null, apartmentInfo: null, room: null, remark: null }
 export default {
@@ -272,8 +277,7 @@ export default {
           value: 2,
           label: '女'
         }
-      ],
-      delLoading: false
+      ]
     }
   },
   methods: {
@@ -306,11 +310,13 @@ export default {
     [CRUD.HOOK.afterValidateCU](crud) {
       return true
     },
-    startProcess(row) {
-      this.delLoading = true
+    reject(row) {
       row.processFlag = true
-      crudApp.startProcess(row.id)
-      this.delLoading = false
+      crudApp.reject(row.taskId)
+    },
+    pass(row) {
+      row.processFlag = true
+      crudApp.pass(row.taskId)
     }
   }
 }
