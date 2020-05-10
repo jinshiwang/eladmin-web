@@ -2,7 +2,7 @@
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" label-position="left" label-width="0px" class="login-form">
       <h3 class="title">
-        EL-ADMIN 后台管理系统
+        泰州海学 后台管理系统
       </h3>
       <el-form-item prop="username">
         <el-input v-model="loginForm.username" type="text" auto-complete="off" placeholder="账号">
@@ -147,7 +147,7 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
-    background-image:url(https://api.isoyu.com/bing_images.php);
+    background-image:url(http://www.taizhouhaixue.com/20200510.jpg);
     background-size: cover;
   }
   .title {
