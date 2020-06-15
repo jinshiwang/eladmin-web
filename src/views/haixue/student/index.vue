@@ -177,7 +177,7 @@
               <el-button size="mini" type="text" @click="$refs[scope.row.id].doClose()">取消</el-button>
               <el-button :loading="delLoading" type="primary" size="mini" @click="startProcess(scope.row)">确定</el-button>
             </div>
-            <svg-icon slot="reference" icon-class="deploy" />
+            <svg-icon slot="reference" icon-class="link" />
           </el-popover>
         </template>
 
